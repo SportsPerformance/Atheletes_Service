@@ -4,6 +4,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
+import java.time.LocalDate;
 
 @Data
 @Entity
@@ -14,7 +15,7 @@ public class Athletes {
     private int userId;
     private String firstName;
     private String lastName;
-    private String birthDate;
+    private LocalDate birthDate;
     private String gender;
     private float height;
     private float weight;
