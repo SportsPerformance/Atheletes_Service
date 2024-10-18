@@ -14,11 +14,14 @@ import java.util.List;
 @RequestMapping("/api/athletes")
 public class AthleteController {
 
-    @Autowired
-    private AthleteService athleteService;
+    private final AthleteService athleteService;
+
+    public AthleteController(AthleteService athleteService) {
+        this.athleteService = athleteService;
+    }
 
     // 1. Create Athlete Profile
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Athletes> createProfile(
             @RequestBody AthleteRequestDto athleteRequestDto,
             @RequestParam(value = "photo", required = false) MultipartFile photo) {
@@ -27,33 +30,35 @@ public class AthleteController {
     }
 
     // 2. Get Athlete by User ID
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<Athletes> getAthlete(@PathVariable int userId) {
-        Athletes athlete = athleteService.getAthlete(userId);
+    @GetMapping("/getByName")
+    public ResponseEntity<Athletes> getAthlete(@RequestBody String name) {
+        Athletes athlete = athleteService.getAthlete(name);
         return ResponseEntity.ok(athlete);
     }
 
     // 3. Get Athlete by ID
-    @GetMapping("/{athleteId}")
+    @GetMapping("/getById/{athleteId}")
     public ResponseEntity<Athletes> getAthleteById(@PathVariable int athleteId) {
         Athletes athlete = athleteService.getAthleteById(athleteId);
         return ResponseEntity.ok(athlete);
     }
 
     // 4. Get All Athletes
-    @GetMapping
+    @GetMapping("/getAll")
     public ResponseEntity<List<Athletes>> getAll() {
         List<Athletes> athletes = athleteService.getAll();
         return ResponseEntity.ok(athletes);
     }
 
     @GetMapping("/findByUserId/{userId}")
-    public Athletes findAthleteByUserId(@PathVariable int userId){
-        return athleteService.findAthleteByUserId(userId);
+    public ResponseEntity<Athletes> findAthleteByUserId(@PathVariable int userId){
+        Athletes athlete = athleteService.findAthleteByUserId(userId);
+        return  ResponseEntity.ok(athlete);
     }
 
     @GetMapping("/findIdByUserId/{userId}")
-    public int findAthleteIdByUserId(@PathVariable int userId){
-        return athleteService.findAthleteIdByUserId(userId);
+    public ResponseEntity<Integer> findAthleteIdByUserId(@PathVariable int userId){
+        int athleteId = athleteService.findAthleteIdByUserId(userId);
+        return ResponseEntity.ok(athleteId);
     }
 }

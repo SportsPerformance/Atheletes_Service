@@ -13,13 +13,15 @@ import java.util.List;
 @Service
 public class AthleteService {
 
-    @Autowired
-    private AthleteRepository athleteRepository;
+    private final AthleteRepository athleteRepository;
+
+    public AthleteService(AthleteRepository athleteRepository) {
+        this.athleteRepository = athleteRepository;
+    }
 
     // 1. Athlete create Profile
     public Athletes createProfile(AthleteRequestDto athleteRequestDto, String photoUrl, MultipartFile photo) {
         Athletes athlete = new Athletes();
-        athlete.setUserId(athleteRequestDto.getUserId());
         athlete.setFirstName(athleteRequestDto.getFirstName());
         athlete.setLastName(athleteRequestDto.getLastName());
         athlete.setBirthDate(LocalDate.parse(athleteRequestDto.getBirthDate()));
@@ -27,14 +29,19 @@ public class AthleteService {
         athlete.setHeight(athleteRequestDto.getHeight());
         athlete.setWeight(athleteRequestDto.getWeight());
         athlete.setCategory(athleteRequestDto.getCategory());
-        athlete.setCoachId(athleteRequestDto.getCoachId());
         athlete.setPhotoUrl(photoUrl); // Handle file upload logic separately
         return athleteRepository.save(athlete);
     }
 
-    // 2. Athlete getAthlete by user ID
-    public Athletes getAthlete(int userId) {
-        return athleteRepository.findByUserId(userId);
+    // 2. Athlete getAthlete by full name
+    public Athletes getAthlete(String name) {
+        String[] names = name.split(" ", 2);
+        if (names.length != 2){
+            throw new IllegalArgumentException("Full name must consist of first name and last name");
+        }
+        String firstName = names[0];
+        String lastName = names[1];
+        return athleteRepository.findByFullName(firstName, lastName);
     }
 
     // 3. Athlete getAthleteById

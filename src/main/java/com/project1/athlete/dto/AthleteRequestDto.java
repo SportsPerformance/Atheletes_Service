@@ -1,10 +1,14 @@
 package com.project1.athlete.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class AthleteRequestDto {
-    private int userId;
     private String firstName;
     private String lastName;
     private String birthDate;
@@ -12,6 +16,5 @@ public class AthleteRequestDto {
     private float height;
     private float weight;
     private String category;
-    private int coachId;
     // Optionally add other fields if needed
 }
