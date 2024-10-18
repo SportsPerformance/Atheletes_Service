@@ -46,4 +46,13 @@ public class AthleteService {
     public List<Athletes> getAll() {
         return athleteRepository.findAll();
     }
+
+    public Athletes findAthleteByUserId(int userId){
+        return athleteRepository.findByUserId(userId);
+    }
+
+    public int findAthleteIdByUserId(int userId){
+        Athletes athlete = athleteRepository.findByUserId(userId);
+        return athlete.getAthleteId();
+    }
 }
