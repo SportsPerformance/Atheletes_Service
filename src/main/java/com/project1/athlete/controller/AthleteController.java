@@ -46,4 +46,14 @@ public class AthleteController {
         List<Athletes> athletes = athleteService.getAll();
         return ResponseEntity.ok(athletes);
     }
+
+    @GetMapping("/findByUserId/{userId}")
+    public Athletes findAthleteByUserId(@PathVariable int userId){
+        return athleteService.findAthleteByUserId(userId);
+    }
+
+    @GetMapping("/findIdByUserId/{userId}")
+    public int findAthleteIdByUserId(@PathVariable int userId){
+        return athleteService.findAthleteIdByUserId(userId);
+    }
 }
