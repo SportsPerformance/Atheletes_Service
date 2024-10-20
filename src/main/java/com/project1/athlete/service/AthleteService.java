@@ -7,20 +7,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class AthleteService {
 
-    private final AthleteRepository athleteRepository;
 
-    public AthleteService(AthleteRepository athleteRepository) {
+    private final AthleteRepository athleteRepository;
+    private final FileStorageService fileStorageService; // Inject FileStorageService
+
+    @Autowired
+    public AthleteService(AthleteRepository athleteRepository, FileStorageService fileStorageService) {
         this.athleteRepository = athleteRepository;
+        this.fileStorageService = fileStorageService; // Initialize FileStorageService
     }
 
     // 1. Athlete create Profile
-    public Athletes createProfile(AthleteRequestDto athleteRequestDto, String photoUrl, MultipartFile photo) {
+    public Athletes createProfile(AthleteRequestDto athleteRequestDto, MultipartFile photo) {
         Athletes athlete = new Athletes();
         athlete.setFirstName(athleteRequestDto.getFirstName());
         athlete.setLastName(athleteRequestDto.getLastName());
@@ -29,14 +34,27 @@ public class AthleteService {
         athlete.setHeight(athleteRequestDto.getHeight());
         athlete.setWeight(athleteRequestDto.getWeight());
         athlete.setCategory(athleteRequestDto.getCategory());
-        athlete.setPhotoUrl(photoUrl); // Handle file upload logic separately
+
+        // Handle file upload logic and set photoUrl
+        if (photo != null && !photo.isEmpty()) {
+            try {
+                String photoUrl = fileStorageService.storeFile(photo, athleteRequestDto.getUserId()); // Use userId from athleteRequestDto
+                athlete.setPhotoUrl(photoUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
+                // Handle the error, you can also throw a custom exception or return a specific response if needed
+                // For now, we will just return a response with an error message
+                throw new RuntimeException("Failed to store photo: " + e.getMessage(), e);
+            }
+        }
+
         return athleteRepository.save(athlete);
     }
 
     // 2. Athlete getAthlete by full name
     public Athletes getAthlete(String name) {
         String[] names = name.split(" ", 2);
-        if (names.length != 2){
+        if (names.length != 2) {
             throw new IllegalArgumentException("Full name must consist of first name and last name");
         }
         String firstName = names[0];
@@ -54,11 +72,11 @@ public class AthleteService {
         return athleteRepository.findAll();
     }
 
-    public Athletes findAthleteByUserId(int userId){
+    public Athletes findAthleteByUserId(int userId) {
         return athleteRepository.findByUserId(userId);
     }
 
-    public int findAthleteIdByUserId(int userId){
+    public int findAthleteIdByUserId(int userId) {
         Athletes athlete = athleteRepository.findByUserId(userId);
         return athlete.getAthleteId();
     }
