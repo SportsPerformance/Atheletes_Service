@@ -3,11 +3,11 @@ package com.project1.athlete.controller;
 import com.project1.athlete.dto.AthleteRequestDto;
 import com.project1.athlete.model.Athletes;
 import com.project1.athlete.service.AthleteService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -20,18 +20,24 @@ public class AthleteController {
         this.athleteService = athleteService;
     }
 
-    // 1. Create Athlete Profile
+    // 1. Create Athlete Profile with photo upload
     @PostMapping("/create")
     public ResponseEntity<Athletes> createProfile(
             @RequestBody AthleteRequestDto athleteRequestDto,
             @RequestParam(value = "photo", required = false) MultipartFile photo) {
-        Athletes athlete = athleteService.createProfile(athleteRequestDto, null, photo); // Implement photo handling
-        return ResponseEntity.ok(athlete);
+        try {
+            Athletes athlete = athleteService.createProfile(athleteRequestDto, photo);
+            return ResponseEntity.ok(athlete);
+        } catch (Exception e) {
+            // Log the exception
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
-    // 2. Get Athlete by User ID
+    // 2. Get Athlete by Name
     @GetMapping("/getByName")
-    public ResponseEntity<Athletes> getAthlete(@RequestBody String name) {
+    public ResponseEntity<Athletes> getAthlete(@RequestParam String name) {
         Athletes athlete = athleteService.getAthlete(name);
         return ResponseEntity.ok(athlete);
     }
@@ -50,14 +56,16 @@ public class AthleteController {
         return ResponseEntity.ok(athletes);
     }
 
+    // 5. Find Athlete by User ID
     @GetMapping("/findByUserId/{userId}")
-    public ResponseEntity<Athletes> findAthleteByUserId(@PathVariable int userId){
+    public ResponseEntity<Athletes> findAthleteByUserId(@PathVariable int userId) {
         Athletes athlete = athleteService.findAthleteByUserId(userId);
-        return  ResponseEntity.ok(athlete);
+        return ResponseEntity.ok(athlete);
     }
 
+    // 6. Find Athlete ID by User ID
     @GetMapping("/findIdByUserId/{userId}")
-    public ResponseEntity<Integer> findAthleteIdByUserId(@PathVariable int userId){
+    public ResponseEntity<Integer> findAthleteIdByUserId(@PathVariable int userId) {
         int athleteId = athleteService.findAthleteIdByUserId(userId);
         return ResponseEntity.ok(athleteId);
     }
