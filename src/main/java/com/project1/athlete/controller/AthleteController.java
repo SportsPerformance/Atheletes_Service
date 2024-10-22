@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -24,8 +25,8 @@ public class AthleteController {
     @PostMapping("/create")
     public ResponseEntity<Athletes> createProfile(
             @RequestBody AthleteRequestDto athleteRequestDto,
-            @RequestParam(value = "photo", required = false) MultipartFile photo) {
-        Athletes athlete = athleteService.createProfile(athleteRequestDto, null, photo); // Implement photo handling
+            @RequestParam(value = "photo") MultipartFile photo) throws IOException {
+        Athletes athlete = athleteService.createProfile(athleteRequestDto, photo); // Implement photo handling
         return ResponseEntity.ok(athlete);
     }
 

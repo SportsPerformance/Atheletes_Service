@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,7 +22,12 @@ public class AthleteService {
     }
 
     // 1. Athlete create Profile
-    public Athletes createProfile(AthleteRequestDto athleteRequestDto, String photoUrl, MultipartFile photo) {
+    public Athletes createProfile(AthleteRequestDto athleteRequestDto, MultipartFile photo) throws IOException {
+
+        String FOLDER_PATH = "C:/Users/LENOVO/Downloads/athlete/athlete/src/main/java/com/project1athlete/Img/";
+        String filePath = FOLDER_PATH+photo.getOriginalFilename();
+        photo.transferTo(new File(filePath));
+
         Athletes athlete = new Athletes();
         athlete.setFirstName(athleteRequestDto.getFirstName());
         athlete.setLastName(athleteRequestDto.getLastName());
@@ -29,7 +36,7 @@ public class AthleteService {
         athlete.setHeight(athleteRequestDto.getHeight());
         athlete.setWeight(athleteRequestDto.getWeight());
         athlete.setCategory(athleteRequestDto.getCategory());
-        athlete.setPhotoUrl(photoUrl); // Handle file upload logic separately
+        athlete.setPhotoUrl(filePath);
         return athleteRepository.save(athlete);
     }
 
